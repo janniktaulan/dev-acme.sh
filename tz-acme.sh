@@ -188,11 +188,16 @@ function ordering() {
     echo "acme.sh command: acme.sh --issue --server https://emea.acme.atlas.globalsign.com/directory $val_var -k 2048 $domain_var"
     if /root/.acme.sh/acme.sh --issue --server https://emea.acme.atlas.globalsign.com/directory $val_var -k 2048 $domain_var; then
         echo "Certificate received."
-        read -p "Where should we install it?" install_path
+        read -p "Where should we install it?: " install_path
         echo ""
         read -p "What command would you like to use for reloading your webserver upon installation/renewals?" reload_command
         echo ""
-        acme.sh --install-cert -d $domain_install --cert-file $install_path/$domain.crt --key-file $install_path/$domain.key --reloadcmd "$reload_command"
+        if /root/.acme.sh/acme.sh --install-cert -d $domain_install --cert-file $install_path/$domain.crt --key-file $install_path/$domain.key --reloadcmd "$reload_command"; then
+            echo ""
+            echo "Certificate installed & automatic renewal enabled"
+        else
+            echo ""
+            echo "Error while installing cert."
     else
         echo ""
         echo "There was a problem with the certificate request. Please check your credentials and domain validation."

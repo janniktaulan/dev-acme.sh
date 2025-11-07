@@ -198,6 +198,7 @@ function ordering() {
         else
             echo ""
             echo "Error while installing cert."
+        fi
     else
         echo ""
         echo "There was a problem with the certificate request. Please check your credentials and domain validation."

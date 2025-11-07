@@ -276,5 +276,94 @@ function uninstall() {
         exit
     fi
 }
+function dns_full() {
+    echo ""
+    echo "Which DNS provider would you like to use?"
+    echo "1. Azure DNS"
+    echo "2. AWS/Route 53"
+    echo "3. Cloudflare"
+    echo "4. Domeneshop"
+    read -n 1 -p "Enter choice [1-5]: " renewal_choice
+    echo ""
+    case $renewal_choice in
+        1)
+            val_var="--dns dns_azure"
+            if grep -q "export AZURE" "/etc/tz-bot/scripts/.azure_credentials"; then
+                read -n 1 -p "Do you want to reuse saved Azure credentials? (y/n): " reuse_azure
+                echo ""
+                if [[ "$reuse_azure" == "y" ]]; then
+                    . /etc/tz-bot/scripts/.azure_credentials
+                    return
+                fi
+            fi
+            read -p "Please enter your Azure Client ID: " azure_client_id
+            read -p "Please enter your Azure Client Secret: " azure_client_secret
+            read -p "Please enter your Azure Tenant ID: " azure_tenant_id
+            read -p "Please enter your Azure Subscription ID: " azure_subscription_id
+            echo "export AZURE_CLIENT_ID=\"$azure_client_id\"" > /etc/tz-bot/scripts/.azure_credentials
+            echo "export AZURE_CLIENT_SECRET=\"$azure_client_secret\"" >> /etc/tz-bot/scripts/.azure_credentials
+            echo "export AZURE_TENANT_ID=\"$azure_tenant_id\"" >> /etc/tz-bot/scripts/.azure_credentials
+            echo "export AZURE_SUBSCRIPTION_ID=\"$azure_subscription_id\"" >> /etc/tz-bot/scripts/.azure_credentials
+            chmod 600 /etc/tz-bot/scripts/.azure_credentials
+            . /etc/tz-bot/scripts/.azure_credentials
+            ;;
+        2)
+            val_var="--dns dns_aws"
+            if grep -q "export AWS" "/etc/tz-bot/scripts/.aws_credentials"; then
+                read -n 1 -p "Do you want to reuse saved AWS credentials? (y/n): " reuse_aws
+                echo ""
+                if [[ "$reuse_aws" == "y" ]]; then
+                    . /etc/tz-bot/scripts/.aws_credentials
+                    return
+                fi
+            fi
+            read -p "Please enter your AWS Access Key ID: " aws_access_key_id
+            read -p "Please enter your AWS Secret Access Key: " aws_secret_access_key
+            echo "export AWS_ACCESS_KEY_ID=\"$aws_access_key_id\"" > /etc/tz-bot/scripts/.aws_credentials
+            echo "export AWS_SECRET_ACCESS_KEY=\"$aws_secret_access_key\"" >> /etc/tz-bot/scripts/.aws_credentials
+            chmod 600 /etc/tz-bot/scripts/.aws_credentials
+            . /etc/tz-bot/scripts/.aws_credentials
+            ;;
+        3)
+            val_var="--dns dns_cf"
+            if grep -q "export CLOUDFLARE" "/etc/tz-bot/scripts/.cloudflare_credentials"; then
+                read -n 1 -p "Do you want to reuse saved Cloudflare credentials? (y/n): " reuse_cloudflare
+                echo ""
+                if [[ "$reuse_cloudflare" == "y" ]]; then
+                    . /etc/tz-bot/scripts/.cloudflare_credentials
+                    return
+                fi
+            fi
+            read -p "Please enter your Cloudflare account email: " cf_email
+            read -p "Please enter your Cloudflare API Key: " cf_key
+            echo "export CF_Email=\"$cf_email\"" > /etc/tz-bot/scripts/.cloudflare_credentials
+            echo "export CF_Key=\"$cf_key\"" >> /etc/tz-bot/scripts/.cloudflare_credentials
+            chmod 600 /etc/tz-bot/scripts/.cloudflare_credentials
+            . /etc/tz-bot/scripts/.cloudflare_credentials
+            ;;
+        4)
+            val_var="--dns dns_domeneshop"
+            if grep -q "export DOMENESHOP" "/etc/tz-bot/scripts/.domeneshop_credentials"; then
+                read -n 1 -p "Do you want to reuse saved Domeneshop credentials? (y/n): " reuse_domeneshop
+                echo ""
+                if [[ "$reuse_domeneshop" == "y" ]]; then
+                    . /etc/tz-bot/scripts/.domeneshop_credentials
+                    return
+                fi
+            fi
+            read -p "Please enter your Domeneshop API Token: " domeneshop_token
+            read -p "Please enter your Domeneshop API Secret: " domeneshop_secret
+            echo "export DOMENESHOP_Token=\"$domeneshop_token\"" > /etc/tz-bot/scripts/.domeneshop_credentials
+            echo "export DOMENESHOP_Secret=\"$domeneshop_secret\"" >> /etc/tz-bot/scripts/.domeneshop_credentials
+            chmod 600 /etc/tz-bot/scripts/.domeneshop_credentials
+            . /etc/tz-bot/scripts/.domeneshop_credentials
+            ;;
+        *)
+            echo "Invalid choice. Exiting."
+            exit 1
+            ;;
+    esac
+}
+echo "Welcome to TZ-Bot V0.1 (ACME.SH)
 upkeep
 start_prompt

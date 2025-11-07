@@ -209,6 +209,44 @@ function ordering() {
     echo ""
     echo "Your certificate is here: $path"
 }
+function renewal_management() {
+    echo ""
+    echo "Renewal management:"
+    echo "1. List renewals"
+    echo "2. Force renew all certificates"
+    echo "3. Remove a renewal"
+    echo "4. Back to main menu"
+    read -n 1 -p "Enter choice [1-4]: " renewal_choice
+    echo
+    case $renewal_choice in
+        1)
+            echo ""
+            echo "Listen renewals: "
+            /root/.acme.sh/acme.sh --list
+            renewal_management
+            ;;
+        2)
+            echo ""
+            echo "Forcefully running all renewals"
+            /root/.acme.sh/acme.sh --renew-all --force
+            renewal_management
+            ;;
+        3)
+            echo ""
+            echo "Listen renewals: "
+            read -p "Please enter the domain of the renewal you wish to remove: " remove_renew
+            /root/.acme.sh/acme.sh --remove --domain $remove_renew
+            renewal_management
+            ;;
+        4)
+            start_prompt
+            ;;
+        *)
+            echo "Invalid choice. Exiting."
+            exit 1
+            ;;
+    esac
+}
 
 upkeep
 start_prompt

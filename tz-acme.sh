@@ -1,0 +1,209 @@
+#!/bin/bash
+function upkeep() {
+    if ! command -v tz-acmesh >/dev/null 2>&1; then
+        sudo mkdir -p /usr/local/bin
+        if sudo mv /tmp/tz-acmesh /usr/local/bin/tz-acmesh; then
+            sudo chmod +x /usr/local/bin/tz-acmesh
+            sudo mkdir -p /etc/tz-acmesh
+            echo "TZ-acmesh has been installed successfully. You can now run it using the command 'tz-acmesh' or 'sudo tz-acmesh'"
+            exit
+        else
+            echo ""
+            echo "Installation failed."
+            exit 1
+        fi
+    fi
+    if ! command -v acme.sh >/dev/null 2>&1; then
+        echo "acme.sh is not installed."
+        read -n 1 -p "Do you want TZ-acmesh to try installing acme.sh? (y/n): " install_choice
+        if [[ "$install_choice" == "y" ]]; then
+            echo ""
+            echo "Installing acme.sh..."
+            curl https://get.acme.sh | sh -s email=my@example.com
+                if ! command -v acme.sh >/dev/null 2>&1; then
+                echo ""
+                echo "acme.sh installation failed. Please install acme.sh manually."
+                exit 1
+                fi
+        else
+            echo ""
+            echo "acme.sh is required to use TZ-acme.sh. If you need help installing acme.sh, please contact TRUSTZONE support at support@trustzone.com"
+            exit 1
+        fi
+    fi
+    mkdir -p /etc/tz-acmesh/scripts/
+    mkdir -p /etc/tz-acmesh/certs/
+    
+    if ! [ -e "/etc/tz-acmesh/scripts/.azure_credentials" ] ; then
+        touch /etc/tz-acmesh/scripts/.azure_credentials
+    fi
+    if ! [ -e "/etc/tz-acmesh/scripts/.aws_credentials" ] ; then
+        touch /etc/tz-acmesh/scripts/.aws_credentials
+    fi
+
+    if ! [ -e "/etc/tz-acmesh/scripts/.cloudflare_credentials" ] ; then
+        touch /etc/tz-acmesh/scripts/.cloudflare_credentials
+    fi
+
+    if ! [ -e "/etc/tz-acmesh/scripts/.domeneshop_credentials" ] ; then
+        touch /etc/tz-acmesh/scripts/.domeneshop_credentials
+    fi
+
+    if ! [ -e "/etc/tz-acmesh/scripts/.infoblox_credentials" ] ; then
+        touch /etc/tz-acmesh/scripts/.infoblox_credentials
+    fi
+}
+function start_prompt() {
+    echo ""
+    echo "Options:"
+    echo "1. Order a new certificate"
+    echo "2. Renewal Management"
+    echo "3. Uninstall TZ-acmesh and acme.sh"
+    echo "4. Exit"
+    read -n 1 -p "Enter choice [1-4]: " initial_choice
+    echo
+    case $initial_choice in
+        1)
+            echo ""
+            echo "You selected to order a new certificate."
+            new_cert
+            echo
+            ;;
+        2)
+            renewal_management
+            ;;
+        3)
+            echo ""
+            echo "You selected to uninstall TZ-acmesh and acme.sh."
+            read -n 1 -p "Are you sure you want to proceed? (y/n): " confirm_uninstall
+            echo ""
+            if [[ "$confirm_uninstall" == "y" ]]; then
+                echo "Proceeding to uninstall..."
+                uninstall
+            else
+                echo "Uninstallation cancelled."
+                start_prompt
+            fi
+            ;;
+        4)
+            echo "Exiting."
+            exit 0
+            ;;
+        *)
+            echo "Invalid choice. Exiting."
+            exit 1
+            ;;
+    esac
+}
+function read_credentials() {
+    if test -f /etc/tz-acmesh/scripts/.user_credentials; then
+    read -n 1 -p "Do you want to reuse saved EAB credentials? (y/n): " reuse_eab
+    echo
+        if [[ "$reuse_eab" == "y" ]]; then
+            read -p "Please enter your domain: " domain
+            echo
+            return
+        fi
+    fi
+    read -p "Please enter your EAB Key ID: " eab_kid
+    read -p "Please enter your EAB HMAC Key: " eab_hmac
+    read -p "Please enter your domain: " domain
+    echo "export eab_kid=\"$eab_kid\"" > /etc/tz-acmesh/scripts/.user_credentials
+    echo "export eab_hmac=\"$eab_hmac\"" >> /etc/tz-acmesh/scripts/.user_credentials
+    chmod 600 /etc/tz-acmesh/scripts/.user_credentials
+}
+function new_cert() {
+    # Prompt for validation method
+    echo "How do you want to validate?"
+    echo "1: HTTP or Pre-validation"
+    echo "2: DNS validation"
+    read -n 1 -p "Enter choice [1-3]: " validation_choice
+    echo
+
+    case $validation_choice in
+        1)
+            echo "MODE: Pre-validated"
+            echo ""
+            echo "Which web server are you using?"
+            echo "1: Apache"
+            echo "2: Nginx"
+            read -n 1 -p "Enter choice [1-2]: " server_type
+            case $server_type in
+                1)
+                    val_var="--apache"
+                    echo ""
+                    echo "Apache selected"
+                    ;;
+                2)
+                    val_var="--nginx"
+                    echo ""
+                    echo "Nginx selected"
+                    ;;
+                *)
+                    echo "Invalid choice, exiting."
+                    exit 1
+                    ;;
+            esac
+            read_credentials
+            ;;
+        2)
+            echo "MODE: DNS"
+            echo
+            read_credentials
+            dns_full
+            ;;
+        *)
+            echo "Invalid choice. Exiting."
+            exit 1
+            ;;
+    esac
+
+    #reg var
+    # Always source user credentials before using eab_kid and eab_hmac
+    if [ -f /etc/tz-acmesh/scripts/.user_credentials ]; then
+        . /etc/tz-acmesh/scripts/.user_credentials
+    fi
+    registration="--server https://emea.acme.atlas.globalsign.com/directory --email test123@test.com --insecure --force"
+
+    #eab var
+    eab="--eab-kid "${eab_kid:?}" --eab-hmac-key "${eab_hmac:?}""
+
+    if acme.sh --register-account $registration $eab; then
+        echo ""
+        echo "Registration success."
+    else
+        echo ""
+        echo "Something went wrong while trying to register your account."
+        exit 1
+    fi
+
+    #domains
+    if [[ "$domain" == "*."* ]]; then
+        domain_non_wc="${domain#*.}"
+        domain_var="-d "${domain:?}" -d "${domain_non_wc:?}""
+        domain_install="_.${domain#*.}"
+    else
+        domain_var="-d "${domain:?}""
+    fi
+
+    ordering
+    start_prompt
+}
+function ordering() {
+    echo "acme.sh command: acme.sh --issue --server https://emea.acme.atlas.globalsign.com/directory $val_var -k 2048 $domain_var"
+    if acme.sh --issue --server https://emea.acme.atlas.globalsign.com/directory $val_var -k 2048 $domain_var; then
+        echo "Certificate received."
+        read -p "Where should we install it?" install_path
+        echo ""
+        read -p "What command would you like to use for reloading your webserver upon installation/renewals?" reload_command
+        echo ""
+        acme.sh --install-cert -d $domain_install --cert-file $install_path/$domain.crt --key-file $install_path/$domain.key --reloadcmd "$reload_command"
+    else
+        echo ""
+        echo "There was a problem with the certificate request. Please check your credentials and domain validation."
+        echo "You can also contact TRUSTZONE support at support@trustzone.com"
+        exit
+    fi
+    echo ""
+    echo "Your certificate is here: $path"
+}

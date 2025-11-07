@@ -186,7 +186,7 @@ function new_cert() {
 }
 function ordering() {
     echo "acme.sh command: acme.sh --issue --server https://emea.acme.atlas.globalsign.com/directory $val_var -k 2048 $domain_var"
-    if /root/.acme.sh/acme.sh --issue --server https://emea.acme.atlas.globalsign.com/directory $val_var -k 2048 $domain_var; then
+    if /root/.acme.sh/acme.sh --issue --server https://emea.acme.atlas.globalsign.com/directory $val_var --force -k 2048 $domain_var; then
         echo "Certificate received."
         read -p "Where should we install it?: " install_path
         echo ""

@@ -364,6 +364,6 @@ function dns_full() {
             ;;
     esac
 }
-echo "Welcome to TZ-Bot V0.1 (ACME.SH)
+echo "Welcome to TZ-Bot V0.1 (ACME.SH)"
 upkeep
 start_prompt

@@ -191,7 +191,7 @@ function ordering() {
         echo "Certificate received."
         read -p "Where should we install it?: " install_path
         echo ""
-        read -p "What command would you like to use for reloading your webserver upon installation/renewals?" reload_command
+        read -p "What command would you like to use for reloading your webserver upon installation/renewals?: " reload_command
         echo ""
         if /root/.acme.sh/acme.sh --install-cert -d $domain_install --cert-file $install_path/$domain.crt --key-file $install_path/$domain.key --reloadcmd "$reload_command"; then
             echo ""

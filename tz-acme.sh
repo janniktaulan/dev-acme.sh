@@ -337,25 +337,24 @@ function dns_full() {
             fi
             echo ""
             echo "Options:"
-            echo "1. Use a global API key (Not-recommended - less safe)"
-            echo "2. Use an account-owned token (Recommended - more safe)"
-            echo "3. Exit"
+            echo "1. Use an account-owned token (Recommended - more safe)"
+            echo "2. Use a global API key (Not-recommended - less safe)"
             read -n 1 -p "Enter choice [1-4]: " initial_choice
             echo
             case $initial_choice in
                 1)
-                    read -p "Please enter your Cloudflare account email: " cf_email
-                    read -p "Please enter your Cloudflare API Key: " cf_key
-                    echo "export CF_Email=\"$cf_email\"" > /etc/tz-bot/scripts/.cloudflare_credentials
-                    echo "export CF_Key=\"$cf_key\"" >> /etc/tz-bot/scripts/.cloudflare_credentials
-                    chmod 600 /etc/tz-bot/scripts/.cloudflare_credentials
-                    . /etc/tz-bot/scripts/.cloudflare_credentials
-                    ;;
-                2)
                     read -p "Please enter your Cloudflare Token: " cf_token
                     read -p "Please enter your Cloudflare Account ID: " cf_account_id
                     echo "export CF_Token=\"$cf_token\"" > /etc/tz-bot/scripts/.cloudflare_credentials
                     echo "export CF_Account_ID=\"$cf_account_id\"" >> /etc/tz-bot/scripts/.cloudflare_credentials
+                    chmod 600 /etc/tz-bot/scripts/.cloudflare_credentials
+                    . /etc/tz-bot/scripts/.cloudflare_credentials
+                    ;;
+                2)
+                    read -p "Please enter your Cloudflare account email: " cf_email
+                    read -p "Please enter your Cloudflare API Key: " cf_key
+                    echo "export CF_Email=\"$cf_email\"" > /etc/tz-bot/scripts/.cloudflare_credentials
+                    echo "export CF_Key=\"$cf_key\"" >> /etc/tz-bot/scripts/.cloudflare_credentials
                     chmod 600 /etc/tz-bot/scripts/.cloudflare_credentials
                     . /etc/tz-bot/scripts/.cloudflare_credentials
                     ;;

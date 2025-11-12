@@ -292,11 +292,11 @@ function dns_full() {
     case $renewal_choice in
         1)
             val_var="--dns dns_azure"
-            if grep -q "export AZURE" "/etc/tz-bot/scripts/.azure_credentials"; then
+            if grep -q "export AZURE" "/etc/tz-acmesh/scripts/.azure_credentials"; then
                 read -n 1 -p "Do you want to reuse saved Azure credentials? (y/n): " reuse_azure
                 echo ""
                 if [[ "$reuse_azure" == "y" ]]; then
-                    . /etc/tz-bot/scripts/.azure_credentials
+                    . /etc/tz-acmesh/scripts/.azure_credentials
                     return
                 fi
             fi
@@ -304,37 +304,37 @@ function dns_full() {
             read -p "Please enter your Azure Client Secret: " azure_client_secret
             read -p "Please enter your Azure Tenant ID: " azure_tenant_id
             read -p "Please enter your Azure Subscription ID: " azure_subscription_id
-            echo "export AZURE_CLIENT_ID=\"$azure_client_id\"" > /etc/tz-bot/scripts/.azure_credentials
-            echo "export AZURE_CLIENT_SECRET=\"$azure_client_secret\"" >> /etc/tz-bot/scripts/.azure_credentials
-            echo "export AZURE_TENANT_ID=\"$azure_tenant_id\"" >> /etc/tz-bot/scripts/.azure_credentials
-            echo "export AZURE_SUBSCRIPTION_ID=\"$azure_subscription_id\"" >> /etc/tz-bot/scripts/.azure_credentials
-            chmod 600 /etc/tz-bot/scripts/.azure_credentials
-            . /etc/tz-bot/scripts/.azure_credentials
+            echo "export AZURE_CLIENT_ID=\"$azure_client_id\"" > /etc/tz-acmesh/scripts/.azure_credentials
+            echo "export AZURE_CLIENT_SECRET=\"$azure_client_secret\"" >> /etc/tz-acmesh/scripts/.azure_credentials
+            echo "export AZURE_TENANT_ID=\"$azure_tenant_id\"" >> /etc/tz-acmesh/scripts/.azure_credentials
+            echo "export AZURE_SUBSCRIPTION_ID=\"$azure_subscription_id\"" >> /etc/tz-acmesh/scripts/.azure_credentials
+            chmod 600 /etc/tz-acmesh/scripts/.azure_credentials
+            . /etc/tz-acmesh/scripts/.azure_credentials
             ;;
         2)
             val_var="--dns dns_aws"
-            if grep -q "export AWS" "/etc/tz-bot/scripts/.aws_credentials"; then
+            if grep -q "export AWS" "/etc/tz-acmesh/scripts/.aws_credentials"; then
                 read -n 1 -p "Do you want to reuse saved AWS credentials? (y/n): " reuse_aws
                 echo ""
                 if [[ "$reuse_aws" == "y" ]]; then
-                    . /etc/tz-bot/scripts/.aws_credentials
+                    . /etc/tz-acmesh/scripts/.aws_credentials
                     return
                 fi
             fi
             read -p "Please enter your AWS Access Key ID: " aws_access_key_id
             read -p "Please enter your AWS Secret Access Key: " aws_secret_access_key
-            echo "export AWS_ACCESS_KEY_ID=\"$aws_access_key_id\"" > /etc/tz-bot/scripts/.aws_credentials
-            echo "export AWS_SECRET_ACCESS_KEY=\"$aws_secret_access_key\"" >> /etc/tz-bot/scripts/.aws_credentials
-            chmod 600 /etc/tz-bot/scripts/.aws_credentials
-            . /etc/tz-bot/scripts/.aws_credentials
+            echo "export AWS_ACCESS_KEY_ID=\"$aws_access_key_id\"" > /etc/tz-acmesh/scripts/.aws_credentials
+            echo "export AWS_SECRET_ACCESS_KEY=\"$aws_secret_access_key\"" >> /etc/tz-acmesh/scripts/.aws_credentials
+            chmod 600 /etc/tz-acmesh/scripts/.aws_credentials
+            . /etc/tz-acmesh/scripts/.aws_credentials
             ;;
         3)
             val_var="--dns dns_cf"
-            if grep -q "export CLOUDFLARE" "/etc/tz-bot/scripts/.cloudflare_credentials"; then
+            if grep -q "export CLOUDFLARE" "/etc/tz-acmesh/scripts/.cloudflare_credentials"; then
                 read -n 1 -p "Do you want to reuse saved Cloudflare credentials? (y/n): " reuse_cloudflare
                 echo ""
                 if [[ "$reuse_cloudflare" == "y" ]]; then
-                    . /etc/tz-bot/scripts/.cloudflare_credentials
+                    . /etc/tz-acmesh/scripts/.cloudflare_credentials
                     return
                 fi
             fi
@@ -348,18 +348,18 @@ function dns_full() {
                 1)
                     read -p "Please enter your Cloudflare Token: " cf_token
                     read -p "Please enter your Cloudflare Account ID: " cf_account_id
-                    echo "export CF_Token=\"$cf_token\"" > /etc/tz-bot/scripts/.cloudflare_credentials
-                    echo "export CF_Account_ID=\"$cf_account_id\"" >> /etc/tz-bot/scripts/.cloudflare_credentials
-                    chmod 600 /etc/tz-bot/scripts/.cloudflare_credentials
-                    . /etc/tz-bot/scripts/.cloudflare_credentials
+                    echo "export CF_Token=\"$cf_token\"" > /etc/tz-acmesh/scripts/.cloudflare_credentials
+                    echo "export CF_Account_ID=\"$cf_account_id\"" >> /etc/tz-acmesh/scripts/.cloudflare_credentials
+                    chmod 600 /etc/tz-acmesh/scripts/.cloudflare_credentials
+                    . /etc/tz-acmesh/scripts/.cloudflare_credentials
                     ;;
                 2)
                     read -p "Please enter your Cloudflare account email: " cf_email
                     read -p "Please enter your Cloudflare API Key: " cf_key
-                    echo "export CF_Email=\"$cf_email\"" > /etc/tz-bot/scripts/.cloudflare_credentials
-                    echo "export CF_Key=\"$cf_key\"" >> /etc/tz-bot/scripts/.cloudflare_credentials
-                    chmod 600 /etc/tz-bot/scripts/.cloudflare_credentials
-                    . /etc/tz-bot/scripts/.cloudflare_credentials
+                    echo "export CF_Email=\"$cf_email\"" > /etc/tz-acmesh/scripts/.cloudflare_credentials
+                    echo "export CF_Key=\"$cf_key\"" >> /etc/tz-acmesh/scripts/.cloudflare_credentials
+                    chmod 600 /etc/tz-acmesh/scripts/.cloudflare_credentials
+                    . /etc/tz-acmesh/scripts/.cloudflare_credentials
                     ;;
                 *)
                     echo "Invalid choice. Exiting."
@@ -369,35 +369,35 @@ function dns_full() {
             ;;
         4)
             val_var="--dns dns_domeneshop"
-            if grep -q "export DOMENESHOP" "/etc/tz-bot/scripts/.domeneshop_credentials"; then
+            if grep -q "export DOMENESHOP" "/etc/tz-acmesh/scripts/.domeneshop_credentials"; then
                 read -n 1 -p "Do you want to reuse saved Domeneshop credentials? (y/n): " reuse_domeneshop
                 echo ""
                 if [[ "$reuse_domeneshop" == "y" ]]; then
-                    . /etc/tz-bot/scripts/.domeneshop_credentials
+                    . /etc/tz-acmesh/scripts/.domeneshop_credentials
                     return
                 fi
             fi
             read -p "Please enter your Domeneshop API Token: " domeneshop_token
             read -p "Please enter your Domeneshop API Secret: " domeneshop_secret
-            echo "export DOMENESHOP_Token=\"$domeneshop_token\"" > /etc/tz-bot/scripts/.domeneshop_credentials
-            echo "export DOMENESHOP_Secret=\"$domeneshop_secret\"" >> /etc/tz-bot/scripts/.domeneshop_credentials
-            chmod 600 /etc/tz-bot/scripts/.domeneshop_credentials
-            . /etc/tz-bot/scripts/.domeneshop_credentials
+            echo "export DOMENESHOP_Token=\"$domeneshop_token\"" > /etc/tz-acmesh/scripts/.domeneshop_credentials
+            echo "export DOMENESHOP_Secret=\"$domeneshop_secret\"" >> /etc/tz-acmesh/scripts/.domeneshop_credentials
+            chmod 600 /etc/tz-acmesh/scripts/.domeneshop_credentials
+            . /etc/tz-acmesh/scripts/.domeneshop_credentials
             ;;
         5)
             val_var="--dns dns_googledomains"
-            if grep -q "export GOOGLE" "/etc/tz-bot/scripts/.google_credentials"; then
+            if grep -q "export GOOGLE" "/etc/tz-acmesh/scripts/.google_credentials"; then
                 read -n 1 -p "Do you want to reuse saved Google credentials? (y/n): " reuse_google
                 echo ""
                 if [[ "$reuse_google" == "y" ]]; then
-                    . /etc/tz-bot/scripts/.google_credentials
+                    . /etc/tz-acmesh/scripts/.google_credentials
                     return
                 fi
             fi
             read -p "Please enter your Google Domains Access Token: " googledomains_access_token
-            echo "export GOOGLEDOMAINS_ACCESS_TOKEN=\"$googledomains_access_token\"" > /etc/tz-bot/scripts/.google_credentials
-            chmod 600 /etc/tz-bot/scripts/.google_credentials
-            . /etc/tz-bot/scripts/.google_credentials
+            echo "export GOOGLEDOMAINS_ACCESS_TOKEN=\"$googledomains_access_token\"" > /etc/tz-acmesh/scripts/.google_credentials
+            chmod 600 /etc/tz-acmesh/scripts/.google_credentials
+            . /etc/tz-acmesh/scripts/.google_credentials
             ;;
         *)
             echo "Invalid choice. Exiting."

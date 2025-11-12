@@ -283,6 +283,7 @@ function dns_full() {
     echo "2. AWS/Route 53"
     echo "3. Cloudflare"
     echo "4. Domeneshop"
+    echo "5. Google DNS"
     read -n 1 -p "Enter choice [1-5]: " renewal_choice
     echo ""
     case $renewal_choice in
@@ -334,12 +335,35 @@ function dns_full() {
                     return
                 fi
             fi
-            read -p "Please enter your Cloudflare account email: " cf_email
-            read -p "Please enter your Cloudflare API Key: " cf_key
-            echo "export CF_Email=\"$cf_email\"" > /etc/tz-bot/scripts/.cloudflare_credentials
-            echo "export CF_Key=\"$cf_key\"" >> /etc/tz-bot/scripts/.cloudflare_credentials
-            chmod 600 /etc/tz-bot/scripts/.cloudflare_credentials
-            . /etc/tz-bot/scripts/.cloudflare_credentials
+            echo ""
+            echo "Options:"
+            echo "1. Use a global API key (Not-recommended - less safe)"
+            echo "2. Use an account-owned token (Recommended - more safe)"
+            echo "3. Exit"
+            read -n 1 -p "Enter choice [1-4]: " initial_choice
+            echo
+            case $initial_choice in
+                1)
+                    read -p "Please enter your Cloudflare account email: " cf_email
+                    read -p "Please enter your Cloudflare API Key: " cf_key
+                    echo "export CF_Email=\"$cf_email\"" > /etc/tz-bot/scripts/.cloudflare_credentials
+                    echo "export CF_Key=\"$cf_key\"" >> /etc/tz-bot/scripts/.cloudflare_credentials
+                    chmod 600 /etc/tz-bot/scripts/.cloudflare_credentials
+                    . /etc/tz-bot/scripts/.cloudflare_credentials
+                    ;;
+                2)
+                    read -p "Please enter your Cloudflare Token: " cf_token
+                    read -p "Please enter your Cloudflare Account ID: " cf_account_id
+                    echo "export CF_Token=\"$cf_token\"" > /etc/tz-bot/scripts/.cloudflare_credentials
+                    echo "export CF_Account_ID=\"$cf_account_id\"" >> /etc/tz-bot/scripts/.cloudflare_credentials
+                    chmod 600 /etc/tz-bot/scripts/.cloudflare_credentials
+                    . /etc/tz-bot/scripts/.cloudflare_credentials
+                    ;;
+                *)
+                    echo "Invalid choice. Exiting."
+                    exit 1
+                    ;;
+            esac
             ;;
         4)
             val_var="--dns dns_domeneshop"
@@ -358,6 +382,9 @@ function dns_full() {
             chmod 600 /etc/tz-bot/scripts/.domeneshop_credentials
             . /etc/tz-bot/scripts/.domeneshop_credentials
             ;;
+        5)
+            val_var="--dns dns_googledomains"
+            #export GOOGLEDOMAINS_ACCESS_TOKEN="<generated-access-token>"
         *)
             echo "Invalid choice. Exiting."
             exit 1

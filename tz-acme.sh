@@ -31,6 +31,9 @@ function upkeep() {
     if ! [ -e "/etc/tz-acmesh/scripts/.azure_credentials" ] ; then
         touch /etc/tz-acmesh/scripts/.azure_credentials
     fi
+    if ! [ -e "/etc/tz-acmesh/scripts/.google_credentials" ] ; then
+        touch /etc/tz-acmesh/scripts/.google_credentials
+    fi
     if ! [ -e "/etc/tz-acmesh/scripts/.aws_credentials" ] ; then
         touch /etc/tz-acmesh/scripts/.aws_credentials
     fi
@@ -283,7 +286,7 @@ function dns_full() {
     echo "2. AWS/Route 53"
     echo "3. Cloudflare"
     echo "4. Domeneshop"
-    echo "5. Google DNS (NOT WORKING ATM)"
+    echo "5. Google Domains DNS"
     read -n 1 -p "Enter choice [1-5]: " renewal_choice
     echo ""
     case $renewal_choice in
@@ -339,7 +342,7 @@ function dns_full() {
             echo "Options:"
             echo "1. Use an account-owned token (Recommended - more safe)"
             echo "2. Use a global API key (Not-recommended - less safe)"
-            read -n 1 -p "Enter choice [1-4]: " initial_choice
+            read -n 1 -p "Enter choice [1-2]: " initial_choice
             echo
             case $initial_choice in
                 1)
@@ -383,7 +386,18 @@ function dns_full() {
             ;;
         5)
             val_var="--dns dns_googledomains"
-            #export GOOGLEDOMAINS_ACCESS_TOKEN="<generated-access-token>"
+            if grep -q "export GOOGLE" "/etc/tz-bot/scripts/.google_credentials"; then
+                read -n 1 -p "Do you want to reuse saved Google credentials? (y/n): " reuse_google
+                echo ""
+                if [[ "$reuse_google" == "y" ]]; then
+                    . /etc/tz-bot/scripts/.google_credentials
+                    return
+                fi
+            fi
+            read -p "Please enter your Google Domains Access Token: " googledomains_access_token
+            echo "export GOOGLEDOMAINS_ACCESS_TOKEN=\"$googledomains_access_token\"" > /etc/tz-bot/scripts/.google_credentials
+            chmod 600 /etc/tz-bot/scripts/.google_credentials
+            . /etc/tz-bot/scripts/.google_credentials
             ;;
         *)
             echo "Invalid choice. Exiting."

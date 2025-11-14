@@ -50,9 +50,6 @@ function upkeep() {
         touch /etc/tz-acmesh/scripts/.domeneshop_credentials
     fi
 
-    if ! [ -e "/etc/tz-acmesh/scripts/.infoblox_credentials" ] ; then
-        touch /etc/tz-acmesh/scripts/.infoblox_credentials
-    fi
 }
 function start_prompt() {
     echo ""

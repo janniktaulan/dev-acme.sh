@@ -269,8 +269,10 @@ function uninstall() {
         /root/.acme.sh/acme.sh --uninstall
         if command -v /root/.acme.sh/acme.sh >/dev/null 2>&1; then
             echo "Uninstallation of acme.sh failed. Please remove manually."
+            echo "If you installed acme.sh on a different user than root, you have to uninstall it manually."
         else
             echo "acme.sh have been uninstalled successfully."
+            echo "If you installed acme.sh on a different user than root, you have to uninstall it manually."
         fi
         if command -v tz-acmesh >/dev/null 2>&1; then
             echo "Uninstallation of TZ-acmesh failed. Please remove manually."
@@ -334,7 +336,7 @@ function dns_full() {
             ;;
         3)
             val_var="--dns dns_cf"
-            if grep -q "export CLOUDFLARE" "/etc/tz-acmesh/scripts/.cloudflare_credentials"; then
+            if grep -q "export CF_" "/etc/tz-acmesh/scripts/.cloudflare_credentials"; then
                 read -n 1 -p "Do you want to reuse saved Cloudflare credentials? (y/n): " reuse_cloudflare
                 echo ""
                 if [[ "$reuse_cloudflare" == "y" ]]; then
@@ -390,7 +392,7 @@ function dns_full() {
             ;;
         5)
             val_var="--dns dns_googledomains"
-            if grep -q "export GOOGLE" "/etc/tz-acmesh/scripts/.google_credentials"; then
+            if grep -q "export GOOGLEDOMAINS" "/etc/tz-acmesh/scripts/.google_credentials"; then
                 read -n 1 -p "Do you want to reuse saved Google credentials? (y/n): " reuse_google
                 echo ""
                 if [[ "$reuse_google" == "y" ]]; then
